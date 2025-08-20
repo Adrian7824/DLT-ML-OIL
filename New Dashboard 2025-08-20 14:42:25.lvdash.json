@@ -1,0 +1,259 @@
+{
+  "datasets": [
+    {
+      "name": "4357dd46",
+      "displayName": "Producción mensual por pozo",
+      "queryLines": [
+        "SELECT pozo_id, mes, oil_bbl\r\n",
+        "FROM oil.dev.gold_monthly_kpis_tbl\r\n",
+        "ORDER BY pozo_id, mes;"
+      ]
+    },
+    {
+      "name": "eec215d2",
+      "displayName": "Lifting cost promedio por mes",
+      "queryLines": [
+        "SELECT mes, AVG(lifting_cost_usd_bbl) AS avg_lifting_cost\r\n",
+        "FROM oil.dev.gold_monthly_kpis_tbl\r\n",
+        "GROUP BY mes\r\n",
+        "ORDER BY mes;\r\n"
+      ]
+    },
+    {
+      "name": "c3663a78",
+      "displayName": "Margen mensual por pozo",
+      "queryLines": [
+        "SELECT\r\n",
+        "  mes,\r\n",
+        "  pozo_id,\r\n",
+        "  margen_usd\r\n",
+        "FROM oil.dev.gold_monthly_kpis_tbl\r\n",
+        "ORDER BY mes, pozo_id;\r\n"
+      ]
+    },
+    {
+      "name": "1000f576",
+      "displayName": "Real vs prediction",
+      "queryLines": [
+        "SELECT\r\n",
+        "  p.pozo_id,\r\n",
+        "  p.mes,\r\n",
+        "  k.oil_bbl       AS real_oil_bbl,\r\n",
+        "  p.y_hat_oil_bbl_next AS pred_oil_bbl_next,\r\n",
+        "  (p.y_hat_oil_bbl_next - k.oil_bbl) AS error\r\n",
+        "FROM oil.dev.gold_predictions p\r\n",
+        "LEFT JOIN oil.dev.gold_monthly_kpis_tbl k\r\n",
+        "  ON p.pozo_id = k.pozo_id AND p.mes = k.mes\r\n",
+        "ORDER BY p.pozo_id, p.mes;"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "064b2c32",
+      "displayName": "Dashboard",
+      "layout": [
+        {
+          "widget": {
+            "name": "32deba0f",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4357dd46",
+                  "fields": [
+                    {
+                      "name": "pozo_id",
+                      "expression": "`pozo_id`"
+                    },
+                    {
+                      "name": "monthly(mes)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `mes`)"
+                    },
+                    {
+                      "name": "sum(oil_bbl)",
+                      "expression": "SUM(`oil_bbl`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(mes)",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "mes"
+                },
+                "y": {
+                  "fieldName": "sum(oil_bbl)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Sum of oil_bbl"
+                },
+                "color": {
+                  "fieldName": "pozo_id",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "pozo_id"
+                },
+                "label": {
+                  "show": false
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Producción mensual por pozo"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "7e317db5",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "eec215d2",
+                  "fields": [
+                    {
+                      "name": "monthly(mes)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `mes`)"
+                    },
+                    {
+                      "name": "sum(avg_lifting_cost)",
+                      "expression": "SUM(`avg_lifting_cost`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "area",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(mes)",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "mes"
+                },
+                "y": {
+                  "fieldName": "sum(avg_lifting_cost)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Sum of avg_lifting_cost"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "showDescription": false,
+                "title": "Lifting cost promedio por mes"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "a177f90a",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "c3663a78",
+                  "fields": [
+                    {
+                      "name": "pozo_id",
+                      "expression": "`pozo_id`"
+                    },
+                    {
+                      "name": "monthly(mes)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `mes`)"
+                    },
+                    {
+                      "name": "sum(margen_usd)",
+                      "expression": "SUM(`margen_usd`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(mes)",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "mes"
+                },
+                "y": {
+                  "fieldName": "sum(margen_usd)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Sum of margen_usd"
+                },
+                "color": {
+                  "fieldName": "pozo_id",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "pozo_id"
+                },
+                "label": {
+                  "show": false
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Margen mensual por pozo"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 6,
+            "width": 3,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    }
+  }
+}
