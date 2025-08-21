@@ -27,8 +27,6 @@ El objetivo es construir un flujo de datos robusto que permita:
 
 ## 📊 Arquitectura
 
-![Pipeline](oil_lakehouse_flow.png)
-
 Flujo completo:  
 **DLT (ETL)** → **Delta Tables** → **Features ML** → **MLflow (Train & Register)** → **Batch Scoring** → **SQL Dashboards**
 
